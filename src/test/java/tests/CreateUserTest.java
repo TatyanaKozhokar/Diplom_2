@@ -55,9 +55,6 @@ public class CreateUserTest {
                 .body("message", equalTo("Email, password and name are required fields"));
     }
 
-    @Step("Login")
-    public void login(){
-    }
 
     @Test
     @Description("Проверка создания пользователя с валидными данными")

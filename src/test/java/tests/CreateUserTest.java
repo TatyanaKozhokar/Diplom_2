@@ -10,6 +10,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import net.datafaker.Faker;
 import org.apache.http.HttpStatus;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,6 +19,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 public class CreateUserTest {
     Faker faker = new Faker();
     UserData userData;
+    String accessToken;
 
     @Before
     public void setUp() {
@@ -28,7 +30,7 @@ public class CreateUserTest {
     public void createUser() {
         Response response = UserApi.createUser(userData);
         JsonPath jsonPath = response.jsonPath();
-        String accessToken = jsonPath.getString("accessToken");
+        accessToken = jsonPath.getString("accessToken");
         response = UserApi.getUser(accessToken);
         response.then()
                 .statusCode(HttpStatus.SC_OK)
@@ -91,6 +93,12 @@ public class CreateUserTest {
     public void creatingUserWithEmptyNameField() {
         userData = new UserData(faker.internet().emailAddress(), faker.internet().password(), null);
         createUserWithoutRequiredField();
+    }
+
+    @After
+    public void deleteUser(){
+        if (accessToken != null){
+            UserApi.deleteUser(accessToken);}
     }
 
 

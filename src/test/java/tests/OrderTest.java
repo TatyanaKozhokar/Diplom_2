@@ -12,6 +12,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import net.datafaker.Faker;
 import org.apache.http.HttpStatus;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -81,7 +82,9 @@ public class OrderTest {
         OrderData orderData = new OrderData(null);
         Response response = OrderApi.createOrder(accessToken, orderData);
         response.then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST);
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body("success", equalTo(false))
+                .body("message", equalTo("Ingredient ids must be provided"));
     }
 
 
@@ -102,7 +105,7 @@ public class OrderTest {
     }
 
     @Test
-    @Description("Создание заказа авторизованным пользователем с валидными данными")
+    @Description("Создание заказа авторизованным пользователем с невалидными данными")
     public void createAnOrderWithInvalidData(){
         userData = new UserData(faker.internet().emailAddress(), faker.internet().password(), faker.name().name());
         createUser();
@@ -110,11 +113,18 @@ public class OrderTest {
     }
 
     @Test
-    @Description("Создание заказа авторизованным пользователем с валидными данными")
+    @Description("Создание заказа авторизованным пользователем без ингредиентов")
     public void createAnOrderWithEmptyData(){
         userData = new UserData(faker.internet().emailAddress(), faker.internet().password(), faker.name().name());
         createUser();
         createAnOrderEmptyData();
     }
+
+    @After
+    public void deleteUser(){
+        if (accessToken != null){
+            UserApi.deleteUser(accessToken);}
+    }
+
 
 }

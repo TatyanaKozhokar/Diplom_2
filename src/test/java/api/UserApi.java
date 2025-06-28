@@ -22,5 +22,12 @@ public class UserApi {
                 .get(Endpoints.GET_USER);
     }
 
+    public static void deleteUser(String accessToken){
+        given()
+                .header("Authorization", accessToken)
+                .when()
+                .delete(Endpoints.GET_USER);
+    }
+
 
 }
